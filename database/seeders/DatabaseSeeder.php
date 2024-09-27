@@ -2,21 +2,46 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
+ */
 class DatabaseSeeder extends Seeder
 {
+    use WithoutModelEvents;
+
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        // Clear db before seeding
+        $this->truncateTables([
+            'users',
+            'posts'
+        ]);
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        $this->call('UsersTableSeeder');
+        $this->call('PostsTableSeeder');
+    }
+
+    /**
+     * Clear specified tables
+     *
+     * @param array $tables
+     * @return void
+     */
+    protected function truncateTables(array $tables): void
+    {
+        foreach ($tables as $table) {
+            DB::table($table)->truncate();
+        }
     }
 }
